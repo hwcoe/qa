@@ -29,7 +29,8 @@
 	margin-right:10px;
 	clear:right;
 }
-.qa-faqs .expand-collapse:hover {
+.qa-faqs .expand-collapse:hover, 
+.qa-faqs .expand-collapse:focus {
 	text-decoration:underline;
 	cursor:pointer; 
 	background-position: -120px -2px;
@@ -45,7 +46,8 @@
 	padding: 0 0 19px 25px; 
 	background:url(toggle_sprite.png) -40px -81px no-repeat; 
 }
-.qa-faqs dt:hover {
+.qa-faqs dt:hover,
+.qa-faqs dt:focus {
 	text-decoration:underline;
 	cursor:pointer; 
 	background-position: -120px -2px;

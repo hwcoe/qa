@@ -114,7 +114,9 @@ function qa_shortcode($atts) {
 		
 	if ( empty ( $termchildren ) ) { $termchildren[0] = $termID->term_id; }
 	
-	$listing_output = '<div class="qa-faqs" id="qa-faqs"><span class="expand-collapse">Expand All</span>';
+	$listing_output = '<div class="qa-faqs" id="qa-faqs"><span class="expand-collapse" role="button" aria-pressed="false" tabindex="0">Expand All</span>';
+
+	// $listing_output = '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" role="button" tabindex="0">Expand All</button>';
 	
 	// $page_excerpt = get_the_excerpt();
 	// if ( $page_excerpt != '' ) { 
@@ -157,7 +159,7 @@ function qa_shortcode($atts) {
 		
 		foreach ($q->posts as $item) :
 
-			$listing_output .= "<dt id=\"$item->ID\">$item->post_title</dt>\n\t<dd>" . apply_filters( 'the_content', $item->post_content );
+			$listing_output .= "<dt id=\"$item->ID\" tabindex=\"0\" role=\"button\" aria-expanded=\"false\">$item->post_title</dt>\n\t<dd>" . apply_filters( 'the_content', $item->post_content );
 				if ( is_user_logged_in() ) { 
 					$edit_link = get_edit_post_link( $item->ID );
 					$listing_output .= '<br><a class="edit-link" href="'. $edit_link . '">&raquo; Edit this FAQ</a>';
