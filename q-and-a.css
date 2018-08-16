@@ -1,17 +1,17 @@
 .qa-faqs .nav {overflow:hidden; }
-.qa-faqs .nav ul, .qa-toc ul.subcats {
+.qa-faqs .nav ul {
 	margin:20px 0 35px 0; 
 	padding:0 15px 10px 0; 
 	font-size:.85em; 
 	line-height:.9em;
 }
-.qa-faqs .nav ul li, .qa-toc ul.subcats li {
+.qa-faqs .nav ul li {
 	list-style:none; background:none; float:left; padding:0; margin-right:5px; margin-bottom:2em !important;
 }
-.qa-faqs .nav ul li a, .qa-toc ul.subcats li a {
+.qa-faqs .nav ul li a {
 	padding:4px 12px; text-decoration:none; -moz-border-radius: 4px; border-radius: 4px; border: 1px solid #ccddeb; color: #5E72A5;
 }
-.qa-faqs .nav ul li a:hover, .qa-toc ul.subcats li a:hover {
+.qa-faqs .nav ul li a:hover {
 	background:#ccddeb; text-decoration:none; color: #00529b;
 }
 .qa-faqs .faqs {
@@ -39,23 +39,23 @@
 	border-bottom: 1px solid #BFBFBF; 
 	margin-bottom:5px;
 }
-.qa-faqs dt {
+.qa-faqs button {
 	font-weight:bold; 
 	color: #00529b; 
 	line-height:1.5em; 
 	padding: 0 0 19px 25px; 
 	background:url(toggle_sprite.png) -40px -81px no-repeat; 
 }
-.qa-faqs dt:hover,
-.qa-faqs dt:focus {
+.qa-faqs button:hover,
+.qa-faqs button:focus {
 	text-decoration:underline;
 	cursor:pointer; 
 	background-position: -120px -2px;
 }
-.qa-faqs dt.open, .qa-faqs .open {
+.qa-faqs button.open, .qa-faqs .open {
 	background-position:0 -121px;
 }
-.qa-faqs dt.open:hover, .qa-faqs .open:hover {
+.qa-faqs button.open:hover, .qa-faqs .open:hover {
 	background-position:-80px -42px;
 }
 .qa-faqs dd {line-height: 1.4em; padding:0 0 25px 5px;}

@@ -1,16 +1,15 @@
 <?php
 /*
-Plugin Name: UF Q and A
-Description: Create, categorize, and reorder FAQs and insert them into a page with a shortcode.
-Author: UF modified version originally from Raygun
-Author URI: http://madebyraygun.com
-Plugin URI: http://wordpress.org/extend/plugins/q-and-a/
-Version: 0.2.8
+Plugin Name: HWCOE Q and A
+Description: Create and categorize FAQs and insert them into a page with a shortcode.
+Author: HWCOE modified version originally from UF and Raygun
+Author URI: https://www.eng.ufl.edu
+Version: 1.0.0
 */ 
 
 require_once(dirname(__FILE__).'/reorder.php');
 
-$qa_version = "0.2.7";
+$qa_version = "1.0.0";
 // add our default options if they're not already there:
 if (get_option('qa_version')  != $qa_version) {
     update_option('qa_version', $qa_version);}
@@ -114,14 +113,7 @@ function qa_shortcode($atts) {
 		
 	if ( empty ( $termchildren ) ) { $termchildren[0] = $termID->term_id; }
 	
-	$listing_output = '<div class="qa-faqs" id="qa-faqs"><span class="expand-collapse" role="button" aria-pressed="false" tabindex="0">Expand All</span>';
-
-	// $listing_output = '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" role="button" tabindex="0">Expand All</button>';
-	
-	// $page_excerpt = get_the_excerpt();
-	// if ( $page_excerpt != '' ) { 
-	// 	$listing_output .= '<p>' . $page_excerpt . '</p>';
-	// }
+	$listing_output = '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" aria-pressed="false">Expand All</button>';
 	
 	foreach($termchildren as $child) :
 		$term_order[] = get_term_by( 'id', $child, 'faq_category' );
@@ -159,7 +151,7 @@ function qa_shortcode($atts) {
 		
 		foreach ($q->posts as $item) :
 
-			$listing_output .= "<dt id=\"$item->ID\" tabindex=\"0\" role=\"button\" aria-expanded=\"false\">$item->post_title</dt>\n\t<dd>" . apply_filters( 'the_content', $item->post_content );
+			$listing_output .= "<dt>\n\t<button id=\"$item->ID\" aria-controls=\"$item->ID-content\" aria-expanded=\"false\">$item->post_title</button>\n</dt>\n\t<dd id=\"$item->ID-content\" aria-hidden=\"true\">" . apply_filters( 'the_content', $item->post_content );
 				if ( is_user_logged_in() ) { 
 					$edit_link = get_edit_post_link( $item->ID );
 					$listing_output .= '<br><a class="edit-link" href="'. $edit_link . '">&raquo; Edit this FAQ</a>';
@@ -181,60 +173,6 @@ function qa_shortcode($atts) {
 	$qa_shortcode = do_shortcode( $qa_shortcode );
 	return (__($qa_shortcode));
 }//ends the qa_shortcode function
-
-//TOC Shortcode
-// add_shortcode('toc-qa', 'toc_qa_shortcode');
-// define the shortcode function
-// function toc_qa_shortcode($atts) {
-// 	extract(shortcode_atts(array(
-// 	), $atts));
-		
-// 	// stuff that loads when the shortcode is called goes here
-	
-// 		$pageID = get_the_ID();
-// 		$subpages = get_pages( array('child_of' => $pageID, 'sort_column' => 'menu_order'));
-		
-// 		$toc_qa_shortcode = '';
-// 		$toc_qa_shortcode .= '<div class="qa-toc"><ul>';
-		
-// 		foreach($subpages as $page) :
-		
-// 			$toc_qa_shortcode .= '<li><h3><a href="' . get_permalink($page->ID) . '">' . $page->post_title . '</a></h3>';
-// 			if ( $page->post_excerpt != '' ) { 
-// 				$toc_qa_shortcode .= '<p>' . $page->post_excerpt . '</p>';
-// 			}
-// 			$toc_qa_shortcode .= '<ul class="subcats">';
-		
-// 			$cat = $page->post_name;
-			
-// 			$termID = get_term_by('slug', $cat, 'faq_category');
-// 			$termchildren = get_term_children( $termID->term_id, 'faq_category' );
-// 			if ( empty ( $termchildren ) ) { $termchildren[0] = $termID->term_id; }
-			
-// 			foreach($termchildren as $child) :
-// 				$term_order[] = get_term_by( 'id', $child, 'faq_category' );
-// 			endforeach;
-// 			usort($term_order, "faq_cat_sort");
-// 			$termchildren = $term_order;
-// 			$term_order = '';
-			
-// 			foreach($termchildren as $child) :
-// 				$term = get_term_by( 'id', $child->term_id, 'faq_category' );
-// 				$toc_qa_shortcode .= '<li><a href="'. get_permalink($page->ID) .'#' . $term->slug. '">'. $term->name.'</a></li>';
-// 			endforeach;
-			
-// 			$toc_qa_shortcode .= '</ul></li>';
-// 		endforeach;
-		
-// 		$toc_qa_shortcode .= '</ul></div>';		
-
-//  // end shortcode loop
-
-// 	wp_reset_query();
-	
-// 	$toc_qa_shortcode = do_shortcode( $toc_qa_shortcode );
-// 	return (__($toc_qa_shortcode));
-// }//ends the toc_qa_shortcode function
 
 add_filter('manage_edit-qa_faqs_columns', 'qa_columns');
 function qa_columns($columns) {
@@ -283,20 +221,6 @@ function qasearch_shortcode($atts) {
 	return $qasearch_shortcode;
 }//ends the qa-search_shortcode function
 
-
-/* /Custom Faqs Template
-function get_faq_template($single_template) {
- global $post;
-
- if ($post->post_type == 'qa_faqs') {
-      $single_template = dirname( __FILE__ ) . '/single-faqs.php';
- }
- return $single_template;
-}
-
-add_filter( "single_template", "get_faq_template" ) ;
-*/
-
 // scripts to go in the header and/or footer
 
 function qa_init() {
@@ -317,25 +241,35 @@ add_action('admin_menu', 'add_qa_option_page');
 
 function add_qa_option_page() {
 	// hook in the options page function
-	add_options_page('Q and A', 'Q and A', 'manage_options', __FILE__, 'qa_options_page');
+	add_options_page('FAQ/Q and A', 'FAQ/Q and A', 'manage_options', __FILE__, 'qa_options_page');
 
 }
 
 function qa_options_page() { 	// Output the options page
 	global $qa_version ?>
-	<div class="wrap" style="width:500px">
+	<div class="wrap">
 	<?php screen_icon(); ?>
 		<h2>Plugin Reference</h2>
+		<p>You're using Q and A v. <?php echo $qa_version;?>.</p>
+		<h3>Installation</h3>
+		<p>Extract the zip file and upload the contents to the wp-content/plugins/ directory of your WordPress installation and then activate the plugin from plugins page. </p>
+		<p>The plugin registers a new custom post type, so you'll want to update your permalinks. No need to change your permalink structure, just go to "Settings->Permalinks" and click "Save Changes" without making any modifications.</p>
+
+		<h3>Use</h3>
 		<p>Use shortcode <code>[qa]</code> to insert your FAQs into a page.</p>
 		
 		<p>If you want to sort your FAQs into categories, you can optionally use the <code>cat="category-slug"</code> attribute. Example: <code>[qa cat="cheese"]</code> will return only FAQs in the "Cheese" category. You can find the category slug in the <a href="<?php bloginfo('wpurl');?>/wp-admin/edit-tags.php?taxonomy=faq_category&post_type=qa_faqs">FAQ Categories page</a>.
 		
 		<p>You can also insert a single FAQ with the format <code>[qa id="1234"]</code> where 1234 is the post ID.</p>
-		<p>Note: the cat & the id attributes are mutually exclusive. Don't use both in the same shortcode.</p>
+		<p>Note: the cat &amp; the id attributes are mutually exclusive. Don't use both in the same shortcode.</p>
 		
 		<p>Use the shortcode [search-qa] to insert a search form that will search only your FAQs.</p>
 		
+		<h3>Troubleshooting</h3>
+		<dl>
+			<dt>With Javascript disabled, clicking on FAQ titles causes a 404 error.</dt>
+			<dd>Did you update your permalinks? (See installation).</dd>
+		</dl>
 		
-		<p>You're using Q and A v. <?php echo $qa_version;?> by <a href="http://madebyraygun.com">Raygun</a>.
 	</div><!--//wrap div-->
 <?php } ?>
