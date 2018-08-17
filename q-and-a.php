@@ -82,9 +82,6 @@ function restrict_faq_listings_by_categories() {
     }
 }
 
-add_shortcode('qa', 'qa_shortcode');
-// define the shortcode function
-
 function faq_cat_sort($a, $b) {
 	return strcmp($a->description, $b->description);
 }
@@ -95,11 +92,12 @@ function qa_shortcode($atts) {
 	), $atts));
 		
 	// stuff that loads when the shortcode is called goes here
-	
+	global $listing_output;
 	$termID = get_term_by('slug', $cat, 'faq_category');
-	$termchildren = get_term_children( $termID->term_id, 'faq_category' );
-		
-	if ( empty ( $cat ) ) { 
+
+	if ( !empty( $cat ) ) {
+		$termchildren = get_term_children( $termID->term_id, 'faq_category' );
+	} else {
 		$termchildren = get_terms( 'faq_category', 'parent=0&hide_empty=0' ); 
 		function extract_ids($object){
 			$res = array();
@@ -111,10 +109,10 @@ function qa_shortcode($atts) {
 		$termchildren = extract_ids($termchildren);
 	}
 		
-	if ( empty ( $termchildren ) ) { $termchildren[0] = $termID->term_id; }
-	
-	$listing_output = '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" aria-pressed="false">Expand All</button>';
-	
+	if ( empty ( $termchildren ) ) { 
+		$termchildren[0] = $termID->term_id; 
+	}
+		
 	foreach($termchildren as $child) :
 		$term_order[] = get_term_by( 'id', $child, 'faq_category' );
 	endforeach;
@@ -122,16 +120,17 @@ function qa_shortcode($atts) {
 	$termchildren = $term_order;
 	
 	if ( count($termchildren) > 1 ) {
-		$listing_output .= '<div class="nav"><ul>';
 		
+		$listing_output .= '<ul class="qa-nav">';
 		foreach($termchildren as $child) :
 			$term = get_term_by( 'id', $child->term_id, 'faq_category' );
 			$listing_output .= '<li><a href="#' . $term->slug. '">'. $term->name.'</a></li>';
 		endforeach;
-
-		$listing_output .= '</ul></div>';
+		$listing_output .= '</ul>';
 	}
 	
+	$listing_output .= '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" aria-pressed="false">Expand All</button>';
+
 	foreach($termchildren as $child) :
 		$term = get_term_by( 'id', $child->term_id, 'faq_category' );
 		$listing_output .= '<div id="' .$term->slug.'" class="faqs">';
@@ -174,6 +173,9 @@ function qa_shortcode($atts) {
 	return (__($qa_shortcode));
 }//ends the qa_shortcode function
 
+add_shortcode('qa', 'qa_shortcode');
+// define the shortcode function
+
 add_filter('manage_edit-qa_faqs_columns', 'qa_columns');
 function qa_columns($columns) {
     $columns = array(
@@ -207,7 +209,7 @@ function qa_show_columns($name) {
 add_shortcode('search-qa', 'qasearch_shortcode');
 // define the shortcode function
 function qasearch_shortcode($atts) {
-
+		global $qasearch_shortcode;
 		$qasearch_shortcode .= '<div class="search-qa"><form role="search" method="get" id="searchform" action="';
 		$qasearch_shortcode .= get_bloginfo ( 'siteurl' ); 
 		$qasearch_shortcode .='">
