@@ -259,10 +259,7 @@ function qa_options_page() { 	// Output the options page
 		<p>Use shortcode <code>[qa]</code> to insert your FAQs into a page.</p>
 		
 		<p>If you want to sort your FAQs into categories, you can optionally use the <code>cat="category-slug"</code> attribute. Example: <code>[qa cat="cheese"]</code> will return only FAQs in the "Cheese" category. You can find the category slug in the <a href="<?php bloginfo('wpurl');?>/wp-admin/edit-tags.php?taxonomy=faq_category&post_type=qa_faqs">FAQ Categories page</a>.
-		
-		<p>You can also insert a single FAQ with the format <code>[qa id="1234"]</code> where 1234 is the post ID.</p>
-		<p>Note: the cat &amp; the id attributes are mutually exclusive. Don't use both in the same shortcode.</p>
-		
+			
 		<p>Use the shortcode [search-qa] to insert a search form that will search only your FAQs.</p>
 		
 		<h3>Troubleshooting</h3>
