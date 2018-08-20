@@ -1,6 +1,6 @@
 Plugin Name: HWCOE Q and A  
 Description: Create, categorize, and reorder FAQs and insert them into a page with a shortcode. Adapted from FAQ plugin by http://madebyraygun.com
-Version: 1.0  
+Version: 1.0.0  
 License: GPL  
 Author: Herbert Wertheim College of Engineering  
 Author URI: http://www.eng.ufl.edu  
@@ -36,16 +36,14 @@ Use the shortcode [search-qa] to insert a search form that will search only the 
 
 Did you update your permalinks? (See installation).
 
-== Screenshots ==
-
-
-1. Example of FAQs on page.
-
-2. FAQ entry page
-
-3. FAQ reorder page (includes code from My Page Order by Andrew Charlton)
 
 == Changelog ==
+
+1.0.0
+* Change plugin name
+* Make FAQs keyboard navigable
+* Add ARIA attributes for accessibility
+* Update styles to be more theme agnostic
 
 0.2.8
 
