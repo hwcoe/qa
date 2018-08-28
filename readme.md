@@ -39,6 +39,9 @@ Did you update your permalinks? (See installation).
 
 == Changelog ==
 
+1.0.1 
+* Fix "undefined index" PHP notice for faq_category
+
 1.0.0
 * Change plugin name
 * Make FAQs keyboard navigable

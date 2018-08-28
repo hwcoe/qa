@@ -74,9 +74,9 @@ function restrict_faq_listings_by_categories() {
 		// output html for taxonomy dropdown filter
 		echo "<select name='$tax_slug' id='$tax_slug' class='postform'>";
 		echo "<option value=''>Show All $tax_name</option>";
-		foreach ($terms as $term) {
+		foreach ($terms as $term) {			
 			// output each select option line, check against the last $_GET to show the current option selected
-			echo '<option value='. $term->slug, $_GET[$tax_slug] == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
+			echo '<option value='. $term->slug, isset( $_GET[$tax_slug] ) && $_GET[$tax_slug] == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
 		}
 		echo "</select>";
     }

@@ -8,6 +8,10 @@
 	float:left; 
 	margin-right:5px; 
 }
+.qa-nav li:first-child::before {
+	content:"";
+	margin-right:0;
+}
 /* FAQs */
 .qa-faqs .faqs {
 	margin:15px 0; 
