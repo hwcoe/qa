@@ -4,12 +4,12 @@ Plugin Name: HWCOE Q and A
 Description: Create and categorize FAQs and insert them into a page with a shortcode.
 Author: HWCOE modified version originally from UF and Raygun
 Author URI: https://www.eng.ufl.edu
-Version: 1.0.0
+Version: 1.0.2
 */ 
 
 require_once(dirname(__FILE__).'/reorder.php');
 
-$qa_version = "1.0.0";
+$qa_version = "1.0.2";
 // add our default options if they're not already there:
 if (get_option('qa_version')  != $qa_version) {
     update_option('qa_version', $qa_version);}
@@ -38,6 +38,14 @@ function create_qa_post_types() {
 		'query_var' => true,
 		'rewrite' => array( 'slug' => 'faq-category' ),
   ));
+	if( !wp_count_terms ('faq_category') > 0 ) {
+		wp_insert_term(
+			'Uncategorized',
+			'faq_category',
+			array('slug' => 'uncategorized')
+		);
+	}
+
 	register_post_type( 'qa_faqs',
 		array(
 			'labels' => array(
@@ -124,7 +132,9 @@ function qa_shortcode($atts) {
 		$listing_output .= '<ul class="qa-nav">';
 		foreach($termchildren as $child) :
 			$term = get_term_by( 'id', $child->term_id, 'faq_category' );
-			$listing_output .= '<li><a href="#' . $term->slug. '">'. $term->name.'</a></li>';
+			if( $term->count > 0 ) {
+				$listing_output .= '<li><a href="#' . $term->slug. '">'. $term->name.'</a></li>';
+			}
 		endforeach;
 		$listing_output .= '</ul>';
 	}
@@ -133,34 +143,38 @@ function qa_shortcode($atts) {
 
 	foreach($termchildren as $child) :
 		$term = get_term_by( 'id', $child->term_id, 'faq_category' );
-		$listing_output .= '<div id="' .$term->slug.'" class="faqs">';
-		if ( count($termchildren) > 1 ) { $listing_output .= '<h3>'. $term->name. '</h3>'; }
-		$listing_output .= '<dl>'; 
+		
+		if( $term->count > 0 ):
+		
+			$listing_output .= '<div id="' .$term->slug.'" class="faqs">';
+			if ( count($termchildren) > 1 ) { $listing_output .= '<h3>'. $term->name. '</h3>'; }
+			$listing_output .= '<dl>'; 
+		
+			$q = new WP_Query(array(
+				'order'          => 'ASC',
+				'orderby' 		 => 'menu_order ID',
+				'post_type'      => 'qa_faqs',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'faq_category'	 => $term->slug,
+			));
+		
+			// Output term list		
+			
+			foreach ($q->posts as $item) :
+
+				$listing_output .= "<dt>\n\t<button id=\"$item->ID\" aria-controls=\"$item->ID-content\" aria-expanded=\"false\">$item->post_title</button>\n</dt>\n\t<dd id=\"$item->ID-content\" aria-hidden=\"true\">" . apply_filters( 'the_content', $item->post_content );
+					if ( is_user_logged_in() ) { 
+						$edit_link = get_edit_post_link( $item->ID );
+						$listing_output .= '<br><a class="edit-link" href="'. $edit_link . '">&raquo; Edit this FAQ</a>';
+						}
+				$listing_output .= "</dd>\n";
+
+			endforeach;
+		
+			$listing_output .= "\t</dl>\t<a href=\"#qa-faqs\" class=\"small\">Back to Top</a>\t</div>\n";
 	
-		$q = new WP_Query(array(
-			'order'          => 'ASC',
-			'orderby' 		 => 'menu_order ID',
-			'post_type'      => 'qa_faqs',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'faq_category'	 => $term->slug,
-		));
-		
-		// Output term list		
-		
-		foreach ($q->posts as $item) :
-
-			$listing_output .= "<dt>\n\t<button id=\"$item->ID\" aria-controls=\"$item->ID-content\" aria-expanded=\"false\">$item->post_title</button>\n</dt>\n\t<dd id=\"$item->ID-content\" aria-hidden=\"true\">" . apply_filters( 'the_content', $item->post_content );
-				if ( is_user_logged_in() ) { 
-					$edit_link = get_edit_post_link( $item->ID );
-					$listing_output .= '<br><a class="edit-link" href="'. $edit_link . '">&raquo; Edit this FAQ</a>';
-					}
-			$listing_output .= "</dd>\n";
-
-		endforeach;
-		
-		$listing_output .= "\t</dl>\t<a href=\"#qa-faqs\" class=\"small\">Back to Top</a>\t</div>\n";
-		
+		endif;
 	endforeach;
 	
 	$listing_output .= "</div>\n";

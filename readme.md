@@ -1,6 +1,6 @@
 Plugin Name: HWCOE Q and A  
 Description: Create, categorize, and reorder FAQs and insert them into a page with a shortcode. Adapted from FAQ plugin by http://madebyraygun.com
-Version: 1.0.1 
+Version: 1.0.2
 License: GPL  
 Author: Herbert Wertheim College of Engineering  
 Author URI: http://www.eng.ufl.edu  
@@ -38,6 +38,9 @@ Did you update your permalinks? (See installation).
 
 
 == Changelog ==
+
+1.0.2
+- Fix "Trying to get property of non-object" notice 
 
 1.0.1 
 * Fix "undefined index" PHP notice for faq_category

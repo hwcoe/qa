@@ -63,7 +63,9 @@ $subPageStr = faqpageorder_getSubPages($parentID);
 <h2><?php _e('Reorder FAQs', 'faqpageorder') ?></h2>
 <form action="edit.php" method="get" >
 	 <?php 
-		$tax_slug = 'faq_category';
+	 	if ( empty($_GET['faq_category']) ) {
+		 	$tax_slug = 'faq_category';
+	 	}
 		
 		// retrieve the taxonomy object
 		$tax_obj = get_taxonomy($tax_slug);
@@ -75,8 +77,10 @@ $subPageStr = faqpageorder_getSubPages($parentID);
 		echo "<select name='$tax_slug' id='$tax_slug' class='postform'>";
 		echo "<option value=''>Show All $tax_name</option>";
 		foreach ($terms as $term) {
-			// output each select option line, check against the last $_GET to show the current option selected
-			echo '<option value='. $term->term_id, $_GET[$tax_slug] == $term->term_id ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
+			if ($term->count > 0 ) {
+				// output each select option line, check against the last $_GET to show the current option selected
+				echo '<option value='. $term->term_id, $_GET[$tax_slug] == $term->term_id ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
+			}
 		}
 		echo "</select>";
 		
