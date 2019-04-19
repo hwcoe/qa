@@ -388,5 +388,4 @@ jQuery(document).ready(function($) {
 	
 	if(jQuery('.qa-faqs').height() < 600) {jQuery('.faqs .small').hide();}
 	
-	jQuery('.qs_input').focus();
 });
