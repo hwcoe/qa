@@ -39,6 +39,9 @@ Did you update your permalinks? (See installation).
 
 == Changelog ==
 
+1.0.3
+- Bugfix: Prevent filtering input field in quicksearch form from automatically gaining focus on page load
+
 1.0.2
 - Fix "Trying to get property of non-object" notice 
 
