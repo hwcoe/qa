@@ -39,6 +39,9 @@ Did you update your permalinks? (See installation).
 
 == Changelog ==
 
+1.0.4
+- Change faqpageorder_Widget constructor method name to avoid warnings on PHP 7 and newer
+
 1.0.3
 - Bugfix: Prevent filtering input field in quicksearch form from automatically gaining focus on page load
 

@@ -276,7 +276,7 @@ function faqpageorder_loadtranslation() {
 
 class faqpageorder_Widget extends WP_Widget {
 
-	function faqpageorder_Widget() {
+	function __construct() {
 		$widget_ops = array('classname' => 'widget_faqpageorder', 'description' => __( 'Enhanced Pages widget provided by Reorder FAQs', 'faqpageorder') );
 		$this->WP_Widget('faqpageorder', __('Reorder FAQs', 'faqpageorder'), $widget_ops);	}
 
