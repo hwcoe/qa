@@ -1,6 +1,6 @@
 Plugin Name: HWCOE Q and A  
 Description: Create, categorize, and reorder FAQs and insert them into a page with a shortcode. Adapted from FAQ plugin by http://madebyraygun.com
-Version: 1.0.2
+Version: 1.0.4
 License: GPL  
 Author: Herbert Wertheim College of Engineering  
 Author URI: http://www.eng.ufl.edu  
