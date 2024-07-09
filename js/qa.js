@@ -330,13 +330,12 @@ jQuery(function ($) {
 jQuery(document).ready(function($) {
 	//Searchable FAQ code below
 	jQuery('.qa-faqs .faqs dl dt').each(function() {
-		$(this).nextUntil('dt').andSelf().wrapAll('<div class="entry"></div>');
-		$(this).nextUntil('dt').andSelf().wrapAll('<div class="entry"></div>');
+		$(this).nextUntil('dt').andSelf().wrapAll('<div></div>');
 	});
 
-	jQuery('.faqs div.entry dd').hide();
+	jQuery('.faqs dd').hide();
 
-	jQuery('.entry').quicksearch({
+	jQuery('.faqs div').quicksearch({
 		position: 'prepend',
 		attached: '.qa-faqs',
 		labelText: 'Filter FAQs',
@@ -349,24 +348,24 @@ jQuery(document).ready(function($) {
 			$(this).text("Collapse All");
 			$(this).addClass('open');
 			$(this).attr('aria-pressed', 'true');
-			$('.faqs div.entry dd').slideDown();
-			$('.faqs div.entry dd').attr('aria-hidden', 'false');
-			$('.faqs div.entry button').addClass('open');
-			$('.faqs div.entry button').attr('aria-expanded', 'true');
+			$('.faqs dd').slideDown();
+			$('.faqs dd').attr('aria-hidden', 'false');
+			$('.faqs button').addClass('open');
+			$('.faqs button').attr('aria-expanded', 'true');
 		}
 		else if($(this).text() == "Collapse All") {
 			$(this).text("Expand All");
 			$(this).removeClass('open');
 			$(this).attr('aria-pressed', 'false');
-			$('.faqs div.entry dd').slideUp();
-			$('.faqs div.entry dd').attr('aria-hidden', 'true');
-			$('.faqs div.entry button').removeClass('open');
-			$('.faqs div.entry button').attr('aria-expanded', 'false');
+			$('.faqs dd').slideUp();
+			$('.faqs dd').attr('aria-hidden', 'true');
+			$('.faqs button').removeClass('open');
+			$('.faqs button').attr('aria-expanded', 'false');
 		}
 		return true;
 	});
 
-	jQuery('.faqs div.entry button').click(function() {
+	jQuery('.faqs button').click(function() {
 		$(this).closest('dt').next('dd').slideToggle();
 		$(this).toggleClass('open');
 		if ($(this).hasClass('open')) {
@@ -388,6 +387,5 @@ jQuery(document).ready(function($) {
 	});
 	
 	if(jQuery('.qa-faqs').height() < 600) {jQuery('.faqs .small').hide();}
-	
-	jQuery('.qs_input').focus();
+
 });

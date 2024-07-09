@@ -4,12 +4,12 @@ Plugin Name: HWCOE Q and A
 Description: Create and categorize FAQs and insert them into a page with a shortcode.
 Author: HWCOE modified version originally from UF and Raygun
 Author URI: https://www.eng.ufl.edu
-Version: 1.0.0
+Version: 1.0.4
 */ 
 
 require_once(dirname(__FILE__).'/reorder.php');
 
-$qa_version = "1.0.0";
+$qa_version = "1.0.3";
 // add our default options if they're not already there:
 if (get_option('qa_version')  != $qa_version) {
     update_option('qa_version', $qa_version);}
@@ -38,6 +38,14 @@ function create_qa_post_types() {
 		'query_var' => true,
 		'rewrite' => array( 'slug' => 'faq-category' ),
   ));
+	if( !wp_count_terms ('faq_category') > 0 ) {
+		wp_insert_term(
+			'Uncategorized',
+			'faq_category',
+			array('slug' => 'uncategorized')
+		);
+	}
+
 	register_post_type( 'qa_faqs',
 		array(
 			'labels' => array(
@@ -74,16 +82,13 @@ function restrict_faq_listings_by_categories() {
 		// output html for taxonomy dropdown filter
 		echo "<select name='$tax_slug' id='$tax_slug' class='postform'>";
 		echo "<option value=''>Show All $tax_name</option>";
-		foreach ($terms as $term) {
+		foreach ($terms as $term) {			
 			// output each select option line, check against the last $_GET to show the current option selected
-			echo '<option value='. $term->slug, $_GET[$tax_slug] == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
+			echo '<option value='. $term->slug, isset( $_GET[$tax_slug] ) && $_GET[$tax_slug] == $term->slug ? ' selected="selected"' : '','>' . $term->name .' (' . $term->count .')</option>';
 		}
 		echo "</select>";
     }
 }
-
-add_shortcode('qa', 'qa_shortcode');
-// define the shortcode function
 
 function faq_cat_sort($a, $b) {
 	return strcmp($a->description, $b->description);
@@ -95,11 +100,12 @@ function qa_shortcode($atts) {
 	), $atts));
 		
 	// stuff that loads when the shortcode is called goes here
-	
+	global $listing_output;
 	$termID = get_term_by('slug', $cat, 'faq_category');
-	$termchildren = get_term_children( $termID->term_id, 'faq_category' );
-		
-	if ( empty ( $cat ) ) { 
+
+	if ( !empty( $cat ) ) {
+		$termchildren = get_term_children( $termID->term_id, 'faq_category' );
+	} else {
 		$termchildren = get_terms( 'faq_category', 'parent=0&hide_empty=0' ); 
 		function extract_ids($object){
 			$res = array();
@@ -111,10 +117,10 @@ function qa_shortcode($atts) {
 		$termchildren = extract_ids($termchildren);
 	}
 		
-	if ( empty ( $termchildren ) ) { $termchildren[0] = $termID->term_id; }
-	
-	$listing_output = '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" aria-pressed="false">Expand All</button>';
-	
+	if ( empty ( $termchildren ) ) { 
+		$termchildren[0] = $termID->term_id; 
+	}
+		
 	foreach($termchildren as $child) :
 		$term_order[] = get_term_by( 'id', $child, 'faq_category' );
 	endforeach;
@@ -122,46 +128,53 @@ function qa_shortcode($atts) {
 	$termchildren = $term_order;
 	
 	if ( count($termchildren) > 1 ) {
-		$listing_output .= '<div class="nav"><ul>';
 		
+		$listing_output .= '<ul class="qa-nav">';
 		foreach($termchildren as $child) :
 			$term = get_term_by( 'id', $child->term_id, 'faq_category' );
-			$listing_output .= '<li><a href="#' . $term->slug. '">'. $term->name.'</a></li>';
+			if( $term->count > 0 ) {
+				$listing_output .= '<li><a href="#' . $term->slug. '">'. $term->name.'</a></li>';
+			}
 		endforeach;
-
-		$listing_output .= '</ul></div>';
+		$listing_output .= '</ul>';
 	}
 	
+	$listing_output .= '<div class="qa-faqs" id="qa-faqs"><button class="expand-collapse" aria-pressed="false">Expand All</button>';
+
 	foreach($termchildren as $child) :
 		$term = get_term_by( 'id', $child->term_id, 'faq_category' );
-		$listing_output .= '<div id="' .$term->slug.'" class="faqs">';
-		if ( count($termchildren) > 1 ) { $listing_output .= '<h3>'. $term->name. '</h3>'; }
-		$listing_output .= '<dl>'; 
+		
+		if( $term->count > 0 ):
+		
+			$listing_output .= '<div id="' .$term->slug.'" class="faqs">';
+			if ( count($termchildren) > 1 ) { $listing_output .= '<h3>'. $term->name. '</h3>'; }
+			$listing_output .= '<dl>'; 
+		
+			$q = new WP_Query(array(
+				'order'          => 'ASC',
+				'orderby' 		 => 'menu_order ID',
+				'post_type'      => 'qa_faqs',
+				'post_status'    => 'publish',
+				'posts_per_page' => -1,
+				'faq_category'	 => $term->slug,
+			));
+		
+			// Output term list		
+			
+			foreach ($q->posts as $item) :
+
+				$listing_output .= "<dt>\n\t<button id=\"$item->ID\" aria-controls=\"$item->ID-content\" aria-expanded=\"false\">$item->post_title</button>\n</dt>\n\t<dd id=\"$item->ID-content\" aria-hidden=\"true\">" . apply_filters( 'the_content', $item->post_content );
+					if ( is_user_logged_in() ) { 
+						$edit_link = get_edit_post_link( $item->ID );
+						$listing_output .= '<br><a class="edit-link" href="'. $edit_link . '">&raquo; Edit this FAQ</a>';
+						}
+				$listing_output .= "</dd>\n";
+
+			endforeach;
+		
+			$listing_output .= "\t</dl>\t<a href=\"#qa-faqs\" class=\"small\">Back to Top</a>\t</div>\n";
 	
-		$q = new WP_Query(array(
-			'order'          => 'ASC',
-			'orderby' 		 => 'menu_order ID',
-			'post_type'      => 'qa_faqs',
-			'post_status'    => 'publish',
-			'posts_per_page' => -1,
-			'faq_category'	 => $term->slug,
-		));
-		
-		// Output term list		
-		
-		foreach ($q->posts as $item) :
-
-			$listing_output .= "<dt>\n\t<button id=\"$item->ID\" aria-controls=\"$item->ID-content\" aria-expanded=\"false\">$item->post_title</button>\n</dt>\n\t<dd id=\"$item->ID-content\" aria-hidden=\"true\">" . apply_filters( 'the_content', $item->post_content );
-				if ( is_user_logged_in() ) { 
-					$edit_link = get_edit_post_link( $item->ID );
-					$listing_output .= '<br><a class="edit-link" href="'. $edit_link . '">&raquo; Edit this FAQ</a>';
-					}
-			$listing_output .= "</dd>\n";
-
-		endforeach;
-		
-		$listing_output .= "\t</dl>\t<a href=\"#qa-faqs\" class=\"small\">Back to Top</a>\t</div>\n";
-		
+		endif;
 	endforeach;
 	
 	$listing_output .= "</div>\n";
@@ -173,6 +186,9 @@ function qa_shortcode($atts) {
 	$qa_shortcode = do_shortcode( $qa_shortcode );
 	return (__($qa_shortcode));
 }//ends the qa_shortcode function
+
+add_shortcode('qa', 'qa_shortcode');
+// define the shortcode function
 
 add_filter('manage_edit-qa_faqs_columns', 'qa_columns');
 function qa_columns($columns) {
@@ -207,7 +223,7 @@ function qa_show_columns($name) {
 add_shortcode('search-qa', 'qasearch_shortcode');
 // define the shortcode function
 function qasearch_shortcode($atts) {
-
+		global $qasearch_shortcode;
 		$qasearch_shortcode .= '<div class="search-qa"><form role="search" method="get" id="searchform" action="';
 		$qasearch_shortcode .= get_bloginfo ( 'siteurl' ); 
 		$qasearch_shortcode .='">
@@ -259,10 +275,7 @@ function qa_options_page() { 	// Output the options page
 		<p>Use shortcode <code>[qa]</code> to insert your FAQs into a page.</p>
 		
 		<p>If you want to sort your FAQs into categories, you can optionally use the <code>cat="category-slug"</code> attribute. Example: <code>[qa cat="cheese"]</code> will return only FAQs in the "Cheese" category. You can find the category slug in the <a href="<?php bloginfo('wpurl');?>/wp-admin/edit-tags.php?taxonomy=faq_category&post_type=qa_faqs">FAQ Categories page</a>.
-		
-		<p>You can also insert a single FAQ with the format <code>[qa id="1234"]</code> where 1234 is the post ID.</p>
-		<p>Note: the cat &amp; the id attributes are mutually exclusive. Don't use both in the same shortcode.</p>
-		
+			
 		<p>Use the shortcode [search-qa] to insert a search form that will search only your FAQs.</p>
 		
 		<h3>Troubleshooting</h3>
