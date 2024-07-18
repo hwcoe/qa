@@ -41,6 +41,7 @@ Did you update your permalinks? (See installation).
 
 1.0.5
 - Bugfix: implode() for PHP 8
+- Update CSS for Mercury theme
 
 1.0.4
 - Change faqpageorder_Widget constructor method name to avoid warnings on PHP 7 and newer

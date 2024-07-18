@@ -1,12 +1,16 @@
 /* Navigation for listing that includes all FAQ categories */
-.qa-nav {overflow:hidden; }
-.qa-nav {
-	margin:0;
+#content ul.qa-nav {
+	list-style:none;
+	padding-left: 0;
+}
+ul.qa-nav {
+	overflow:hidden; 
+	margin:20px 0;
 	padding:0;
 }
 .qa-nav li {
-	float:left; 
-	margin-right:5px; 
+	margin-right:10px; 
+	display:inline-block;
 }
 .qa-nav li:first-child::before {
 	content:"";
@@ -34,10 +38,10 @@
 /* Controls to expand and collapse FAQs */
 .qa-faqs button {
 	font-weight:bold;
-	color: #00529b;
+	color: #0021A5;
 	line-height: 16px;
-	background:url(toggle_sprite.png) -40px -81px no-repeat; 
-	padding: 0 0 0 25px;	
+	background: transparent; 
+	padding: 0 0 0 20px;					
 	font-family: inherit;
 	text-transform: none;
 	text-align: left;
@@ -47,22 +51,44 @@
 .qa-faqs button:active,
 .qa-faqs button:focus {
 	text-decoration:underline;
-	color: #00529b;
+	color: #0021A5;
 	cursor:pointer; 
-	background-position: -120px -2px;	
 	border: none !important;
-	background-color: transparent;
+}
+
+.qa-faqs button.open, .qa-faqs .open {
+}
+.qa-faqs button.open:hover, .qa-faqs .open:hover {
+}
+.qa-faqs button.open:hover:before, 
+.qa-faqs .open:hover:before {
+	background-color: #ccc;
+}
+.qa-faqs button:before {
+	content:"+";
+	text-align: center;
+/*	line-height:30px;*/
+	background: transparent; 
+	display:inline-block;
+	font-size: 24px;
+	padding:5px 5px 7px 5px;
+	width:25px;
+	margin-right:10px;
+}
+.qa-faqs button:hover:before,
+.qa-faqs button:active:before,
+.qa-faqs button:focus:before {
+	background: #cccccc;
+	transition:all 0.6s ease;	
+}
+.qa-faqs button.open:before, .qa-faqs .open:before {
+	content:"\2013";
+	background: transparent; 
 }
 .qa-faqs .expand-collapse {
 	float:right;
 	margin:10px 10px 20px 10px;
 	clear:right;
-}
-.qa-faqs button.open, .qa-faqs .open {
-	background-position:0 -121px;
-}
-.qa-faqs button.open:hover, .qa-faqs .open:hover {
-	background-position:-80px -42px;
 }
 
 .quicksearch {
