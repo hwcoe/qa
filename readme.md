@@ -41,6 +41,7 @@ Did you update your permalinks? (See installation).
 
 1.0.5
 - Bugfix: implode() for PHP 8
+- Bugfix: Move extract_ids() outside of qa_shortcode() so it doesn't get defined multiple times when a FAQ post belongs to multiple categories
 - Update CSS for Mercury theme
 
 1.0.4

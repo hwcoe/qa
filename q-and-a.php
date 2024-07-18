@@ -94,6 +94,14 @@ function faq_cat_sort($a, $b) {
 	return strcmp($a->description, $b->description);
 }
 
+function extract_ids($object){
+	$res = array();
+	foreach($object as $k=>$v) {
+		$res[]= $v->term_id;
+	}
+	return $res;
+}
+
 function qa_shortcode($atts) {
 	extract(shortcode_atts(array(
 		'cat'	=> ''
@@ -107,13 +115,6 @@ function qa_shortcode($atts) {
 		$termchildren = get_term_children( $termID->term_id, 'faq_category' );
 	} else {
 		$termchildren = get_terms( 'faq_category', 'parent=0&hide_empty=0' ); 
-		function extract_ids($object){
-			$res = array();
-			foreach($object as $k=>$v) {
-				$res[]= $v->term_id;
-			}
-			return $res;
-		}
 		$termchildren = extract_ids($termchildren);
 	}
 		
