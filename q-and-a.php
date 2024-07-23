@@ -4,7 +4,7 @@ Plugin Name: HWCOE Q and A
 Description: Create and categorize FAQs and insert them into a page with a shortcode.
 Author: HWCOE modified version originally from UF and Raygun
 Author URI: https://www.eng.ufl.edu
-Version: 1.0.4
+Version: 1.0.5
 */ 
 
 require_once(dirname(__FILE__).'/reorder.php');
